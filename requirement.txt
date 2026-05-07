@@ -1,0 +1,8 @@
+Flask
+requests
+python-dotenv
+beautifulsoup4
+lxml
+whois
+dnspython
+reportlab
