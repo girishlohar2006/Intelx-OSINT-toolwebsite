@@ -42,10 +42,9 @@ Girish Malviya
 
 ## 🚀 How to Run
 ```bash
-git clone https://github.com/girishlohar2006/intelx-OSINT-web.git
-cd Intelx-OSINT
+git clone https://github.com/girishlohar2006/Intelx-OSINT-toolwebsite.git
+cd Intelx-OSINT-website
 python -m venv venv
-source venv/bin/activate
-window= venv\scripts\activate
-pip install -r requirements.txt
-python app.py
+for linux = venv/bin/activate
+for windows = venv\Scripts\activate
+pip install -r requirements.txtpython app.py
