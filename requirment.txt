@@ -1,0 +1,5 @@
+flask
+request
+dnspython
+python-whois
+reportlab

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>IntelX OSINT Platform</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- MATRIX BACKGROUND -->
+
+    <canvas id="matrix"></canvas>
+
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <h2>IntelX</h2>
+
+        <button onclick="showSection('data')">
+            Dashboard
+        </button>
+
+        <button onclick="showSection('usernameSection')">
+            Username Intelligence
+        </button>
+
+        <button onclick="showSection('emailSection')">
+            Email Intelligence
+        </button>
+
+        <button onclick="showSection('ipSection')">
+            IP Intelligence
+        </button>
+
+        <button onclick="showSection('whoisSection')">
+            WHOIS Intelligence
+        </button>
+
+        <button onclick="showSection('riskSection')">
+            Threat Analysis
+        </button>
+
+        <button onclick="showSection('footprintSection')">
+            Digital Footprint
+        </button>
+
+        <button onclick="showSection('reportSection')">
+            PDF Report
+        </button>
+
+        <a href="/logout">
+
+            <button class="logout-btn">
+                Logout
+            </button>
+
+        </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+
+        <!-- DASHBOARD -->
+
+        <div id="data" class="section">
+
+            <h1>
+                IntelX – OSINT Intelligence Platform
+            </h1>
+
+            <p class="dashboard-subtitle">
+
+                Advanced Cyber Threat Intelligence Dashboard
+
+            </p>
+
+
+            <!-- DASHBOARD CARDS -->
+
+            <div class="dashboard-grid">
+
+                <div class="dashboard-card">
+
+                    <h2 id="totalScans">0</h2>
+
+                    <p>Total Investigations</p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h2 id="riskLevelCard">LOW</h2>
+
+                    <p>Threat Level</p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h2 id="accountsFoundCard">0</h2>
+
+                    <p>Accounts Found</p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h2>ACTIVE</h2>
+
+                    <p>System Status</p>
+
+                </div>
+
+            </div>
+
+
+            <!-- OVERVIEW -->
+
+            <div class="overview-card">
+
+                <h2>
+                    Threat Intelligence Overview
+                </h2>
+
+                <p>
+
+                    IntelX is an OSINT intelligence platform
+                    designed for cybersecurity investigations.
+
+                    The system performs username analysis,
+                    email intelligence, IP tracking,
+                    WHOIS investigation, threat analysis,
+                    and digital footprint monitoring.
+
+                </p>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="overview-card">
+
+                <h2>
+                    Live Intelligence Modules
+                </h2>
+
+                <ul class="activity-list">
+
+                    <li>
+                        ✔ Username Intelligence Ready
+                    </li>
+
+                    <li>
+                        ✔ Email Intelligence Ready
+                    </li>
+
+                    <li>
+                        ✔ IP Intelligence Ready
+                    </li>
+
+                    <li>
+                        ✔ WHOIS Intelligence Ready
+                    </li>
+
+                    <li>
+                        ✔ Threat Analysis Ready
+                    </li>
+
+                    <li>
+                        ✔ PDF Report Engine Online
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <!-- USERNAME SECTION -->
+
+        <div id="usernameSection" class="section">
+
+            <h2>
+                Username Intelligence
+            </h2>
+
+            <input type="text"
+                   id="username"
+                   placeholder="Enter Username">
+
+            <button onclick="searchUser()">
+
+                Analyze Username
+
+            </button>
+
+            <div id="userResult"></div>
+
+        </div>
+
+
+        <!-- EMAIL SECTION -->
+
+        <div id="emailSection" class="section">
+
+            <h2>
+                Email Intelligence
+            </h2>
+
+            <input type="text"
+                   id="email"
+                   placeholder="Enter Email Address">
+
+            <button onclick="checkEmail()">
+
+                Analyze Email
+
+            </button>
+
+            <div id="emailResult"></div>
+
+        </div>
+
+
+        <!-- IP SECTION -->
+
+        <div id="ipSection" class="section">
+
+            <h2>
+                IP Intelligence
+            </h2>
+
+            <input type="text"
+                   id="ip"
+                   placeholder="Enter IP Address">
+
+            <button onclick="checkIP()">
+
+                Analyze IP
+
+            </button>
+
+            <div id="ipResult"></div>
+
+        </div>
+
+
+        <!-- WHOIS SECTION -->
+
+        <div id="whoisSection" class="section">
+
+            <h2>
+                WHOIS Intelligence
+            </h2>
+
+            <input type="text"
+                   id="domain"
+                   placeholder="Enter Domain">
+
+            <button onclick="checkWhois()">
+
+                Analyze Domain
+
+            </button>
+
+            <div id="whoisResult"></div>
+
+        </div>
+
+
+        <!-- THREAT ANALYSIS -->
+
+        <div id="riskSection" class="section">
+
+            <h2>
+                Threat Analysis
+            </h2>
+
+            <button onclick="getRisk()">
+
+                Generate Threat Analysis
+
+            </button>
+
+            <div id="riskResult"></div>
+
+        </div>
+
+
+        <!-- DIGITAL FOOTPRINT -->
+
+        <div id="footprintSection" class="section">
+
+            <h2>
+                Digital Footprint Analysis
+            </h2>
+
+            <button onclick="getFootprint()">
+
+                Analyze Digital Footprint
+
+            </button>
+
+            <div id="footprintResult"></div>
+
+        </div>
+
+
+        <!-- PDF REPORT -->
+
+        <div id="reportSection" class="section">
+
+            <h2>
+                Generate Intelligence Report
+            </h2>
+
+            <button onclick="downloadReport()">
+
+                Download PDF Report
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SCRIPT -->
+
+    <script src="{{ url_for('static', filename='js/script.js') }}">
+    </script>
+
+</body>
+
+</html>

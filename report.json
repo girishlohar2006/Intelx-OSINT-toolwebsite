@@ -1,0 +1,41 @@
+{
+    "username_result": {
+        "GitHub": "Not Found",
+        "Instagram": "Found",
+        "Reddit": "Found"
+    },
+    "email_result": {
+        "domain": "gmail.com",
+        "mx_records": [
+            "alt1.gmail-smtp-in.l.google.com.",
+            "gmail-smtp-in.l.google.com.",
+            "alt2.gmail-smtp-in.l.google.com.",
+            "alt3.gmail-smtp-in.l.google.com.",
+            "alt4.gmail-smtp-in.l.google.com."
+        ],
+        "status": "Valid Domain"
+    },
+    "ip_result": {
+        "city": "Jaipur",
+        "country": "India",
+        "ip": "157.38.133.66",
+        "isp": "Reliance Jio Infocomm Limited",
+        "region": "Rajasthan",
+        "status": "Success"
+    },
+    "whois_result": {
+        "creation_date": "1997-09-15 04:00:00+00:00",
+        "domain": "google.com",
+        "expiration_date": "2028-09-14 04:00:00+00:00",
+        "registrar": "MarkMonitor, Inc.",
+        "status": "Success"
+    },
+    "risk": {
+        "risk_level": "HIGH",
+        "score": 4
+    },
+    "footprint": {
+        "footprint_score": 5,
+        "level": "Strong Presence"
+    }
+}
