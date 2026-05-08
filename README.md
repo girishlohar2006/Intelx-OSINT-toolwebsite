@@ -47,4 +47,5 @@ cd Intelx-OSINT-website
 python -m venv venv
 for linux = venv/bin/activate
 for windows = venv\Scripts\activate
-pip install -r requirements.txtpython app.py
+manually install flask,dnspython,whois-python,reportlab,request command = python -m pip install <dependency name>
+python app.py
