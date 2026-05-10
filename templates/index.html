@@ -5,13 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>IntelX OSINT Platform</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4">
 
 </head>
 
@@ -40,6 +38,10 @@
             Email Intelligence
         </button>
 
+        <button onclick="showSection('phoneSection')">
+            Phone Intelligence
+        </button>
+
         <button onclick="showSection('ipSection')">
             IP Intelligence
         </button>
@@ -60,13 +62,22 @@
             PDF Report
         </button>
 
-        <a href="/logout">
+        <div style="margin-top: auto; margin-bottom: 20px; text-align: center; border-top: 1px solid rgba(0,255,204,0.2); padding-top: 20px;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                Logged in as</p>
+            <p style="color: #00ffcc; font-size: 16px; margin: 5px 0 15px 0; font-weight: bold; text-shadow: 0 0 5px rgba(0,255,204,0.5);">
+                {{ user }}</p>
 
-            <button class="logout-btn">
-                Logout
+            <button onclick="clearAllData()" style="width: 80%; background-color: transparent; border: 1px solid #ff3366; color: #ff3366; margin-bottom: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'Space Mono', monospace; letter-spacing: 1px;" onmouseover="this.style.background='#ff3366'; this.style.color='#fff'; this.style.boxShadow='0 0 15px rgba(255,51,102,0.5)'" onmouseout="this.style.background='transparent'; this.style.color='#ff3366'; this.style.boxShadow='none'">
+                Clear Data
             </button>
 
-        </a>
+            <a href="/logout">
+                <button class="logout-btn">
+                    Logout
+                </button>
+            </a>
+        </div>
 
     </div>
 
@@ -175,6 +186,10 @@
                     </li>
 
                     <li>
+                        ✔ Phone Intelligence Ready
+                    </li>
+
+                    <li>
                         ✔ IP Intelligence Ready
                     </li>
 
@@ -205,9 +220,7 @@
                 Username Intelligence
             </h2>
 
-            <input type="text"
-                   id="username"
-                   placeholder="Enter Username">
+            <input type="text" id="username" placeholder="Enter Username">
 
             <button onclick="searchUser()">
 
@@ -228,9 +241,7 @@
                 Email Intelligence
             </h2>
 
-            <input type="text"
-                   id="email"
-                   placeholder="Enter Email Address">
+            <input type="text" id="email" placeholder="Enter Email Address">
 
             <button onclick="checkEmail()">
 
@@ -243,6 +254,27 @@
         </div>
 
 
+        <!-- PHONE SECTION -->
+
+        <div id="phoneSection" class="section">
+
+            <h2>
+                Phone Intelligence
+            </h2>
+
+            <input type="text" id="phone" placeholder="Enter Phone Number (e.g. +14155552671)">
+
+            <button onclick="checkPhone()">
+
+                Analyze Phone
+
+            </button>
+
+            <div id="phoneResult"></div>
+
+        </div>
+
+
         <!-- IP SECTION -->
 
         <div id="ipSection" class="section">
@@ -251,9 +283,7 @@
                 IP Intelligence
             </h2>
 
-            <input type="text"
-                   id="ip"
-                   placeholder="Enter IP Address">
+            <input type="text" id="ip" placeholder="Enter IP Address">
 
             <button onclick="checkIP()">
 
@@ -274,9 +304,7 @@
                 WHOIS Intelligence
             </h2>
 
-            <input type="text"
-                   id="domain"
-                   placeholder="Enter Domain">
+            <input type="text" id="domain" placeholder="Enter Domain">
 
             <button onclick="checkWhois()">
 

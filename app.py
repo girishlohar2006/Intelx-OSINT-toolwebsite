@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify, send_file, redirect, session
 import requests
 import dns.resolver
@@ -6,8 +5,12 @@ import whois
 import sqlite3
 from datetime import datetime
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+import json
+import phonenumbers
+from phonenumbers import geocoder, carrier, timezone, number_type, PhoneNumberType
 
 app = Flask(__name__)
 app.secret_key = "intelx_secret_key"
@@ -120,7 +123,7 @@ def home():
 
         return redirect('/login')
 
-    return render_template('index.html')
+    return render_template('index.html', user=session['user'])
 
 
 # ================= USERNAME SEARCH =================
@@ -218,6 +221,58 @@ def email_lookup():
             "email": email,
 
             "status": "Invalid Domain"
+        })
+
+
+# ================= PHONE INTELLIGENCE =================
+
+@app.route('/phone', methods=['POST'])
+def phone_lookup():
+
+    phone_number = request.json.get('phone')
+
+    try:
+        parsed_number = phonenumbers.parse(phone_number)
+        is_valid = phonenumbers.is_valid_number(parsed_number)
+        
+        region = geocoder.description_for_number(parsed_number, "en")
+        network = carrier.name_for_number(parsed_number, "en")
+        time_zones = timezone.time_zones_for_number(parsed_number)
+        
+        line_type_num = number_type(parsed_number)
+        type_mapping = {
+            PhoneNumberType.MOBILE: "Mobile",
+            PhoneNumberType.FIXED_LINE: "Landline",
+            PhoneNumberType.FIXED_LINE_OR_MOBILE: "Landline or Mobile",
+            PhoneNumberType.TOLL_FREE: "Toll Free",
+            PhoneNumberType.PREMIUM_RATE: "Premium Rate",
+            PhoneNumberType.SHARED_COST: "Shared Cost",
+            PhoneNumberType.VOIP: "VOIP",
+            PhoneNumberType.PERSONAL_NUMBER: "Personal Number",
+            PhoneNumberType.PAGER: "Pager",
+            PhoneNumberType.UAN: "UAN",
+            PhoneNumberType.VOICEMAIL: "Voicemail",
+            PhoneNumberType.UNKNOWN: "Unknown"
+        }
+        line_type = type_mapping.get(line_type_num, "Unknown")
+        
+        return jsonify({
+            "phone": phone_number,
+            "status": "Valid" if is_valid else "Invalid",
+            "region": region if region else "Unknown",
+            "carrier": network if network else "Unknown",
+            "line_type": line_type,
+            "timezones": list(time_zones) if time_zones else ["Unknown"]
+        })
+
+    except Exception as e:
+        return jsonify({
+            "phone": phone_number,
+            "status": "Error",
+            "region": "Unknown",
+            "carrier": "Unknown",
+            "line_type": "Unknown",
+            "timezones": ["Unknown"]
         })
 
 
@@ -536,7 +591,6 @@ def report():
     elements = []
 
     elements.append(
-
         Paragraph(
             "IntelX OSINT Intelligence Report",
             styles['Title']
@@ -546,28 +600,88 @@ def report():
     elements.append(Spacer(1, 20))
 
     current_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    operator = session.get('user', 'Unknown Analyst')
 
     elements.append(
-
         Paragraph(
-            f"<b>Generated:</b> {current_time}",
+            f"<b>Generated:</b> {current_time}<br/><b>Operator:</b> {operator}",
             styles['BodyText']
         )
     )
 
     elements.append(Spacer(1, 20))
 
-    for key, value in data.items():
+    for key, raw_val in data.items():
+        if not raw_val or raw_val == '{}':
+            continue
+
+        try:
+            parsed_data = json.loads(raw_val)
+        except:
+            parsed_data = raw_val
 
         elements.append(
-
             Paragraph(
-                f"<b>{key}</b>: {value}",
-                styles['BodyText']
+                f"<b>{str(key).replace('_', ' ').upper()}</b>",
+                styles['Heading3']
             )
         )
-
         elements.append(Spacer(1, 10))
+
+        if isinstance(parsed_data, dict):
+            table_data = []
+
+            if key == 'username':
+                table_data.append(['Platform', 'Status', 'Profile URL'])
+                for platform, info in parsed_data.items():
+                    table_data.append([
+                        platform,
+                        info.get('status', 'Unknown'),
+                        info.get('profile', 'N/A')
+                    ])
+            else:
+                for k, v in parsed_data.items():
+                    if isinstance(v, list):
+                        v = ", ".join(map(str, v))
+                    table_data.append([k.replace('_', ' ').title(), str(v)])
+
+            if table_data:
+                # Set table styling based on whether it has a header row (username) or not
+                has_header = (key == 'username')
+                
+                t = Table(table_data, colWidths=['30%', '70%'] if not has_header else ['25%', '25%', '50%'])
+                
+                style_commands = [
+                    ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+                    ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                    ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+                    ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+                    ('TOPPADDING', (0,0), (-1,-1), 8),
+                ]
+
+                if has_header:
+                    style_commands.extend([
+                        ('BACKGROUND', (0,0), (-1,0), colors.darkslategray),
+                        ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+                        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                    ])
+                else:
+                    style_commands.extend([
+                        ('BACKGROUND', (0,0), (0,-1), colors.lightgrey),
+                        ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'),
+                    ])
+
+                t.setStyle(TableStyle(style_commands))
+                elements.append(t)
+        else:
+            elements.append(
+                Paragraph(
+                    str(parsed_data),
+                    styles['BodyText']
+                )
+            )
+
+        elements.append(Spacer(1, 20))
 
     doc.build(elements)
 
@@ -578,5 +692,12 @@ def report():
 
 
 # ================= MAIN =================
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True
+    )
+
